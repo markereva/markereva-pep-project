@@ -88,15 +88,14 @@ public class MessageDAO {
   }
 
   public Message insertMessage(Message message) {
-    String sql = "INSERT INTO Message (message_id, posted_by, message_text, time_posted_epoch) VALUES (?, ?, ?, ?)";
+    String sql = "INSERT INTO Message (posted_by, message_text, time_posted_epoch) VALUES (?, ?, ?)";
     Connection conn = ConnectionUtil.getConnection();
 
     try {
       PreparedStatement ps = conn.prepareStatement(sql);
-      ps.setInt(1, message.getMessage_id());
-      ps.setInt(2, message.getPosted_by());
-      ps.setString(3, message.getMessage_text());
-      ps.setLong(4, message.getTime_posted_epoch());
+      ps.setInt(1, message.getPosted_by());
+      ps.setString(2, message.getMessage_text());
+      ps.setLong(3, message.getTime_posted_epoch());
       ps.executeUpdate();
       return message;
     } catch (SQLException e) {
