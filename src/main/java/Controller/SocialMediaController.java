@@ -56,7 +56,7 @@ public class SocialMediaController {
       .check(obj -> obj.getUsername().length() != 0, "username length cannot be 0")
       .check(obj -> obj.getUsername().length() <= 255, "username length cannot be longer than 255")
       .check(obj -> obj.getPassword().length() >= 4, "password length cannot less than 4")
-      .check(obj -> obj.getUsername().length() <= 255, "password length cannot be longer than 255")
+      .check(obj -> obj.getPassword().length() <= 255, "password length cannot be longer than 255")
       .get();
     } catch (ValidationException e) {
       ctx.status(400);
