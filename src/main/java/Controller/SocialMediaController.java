@@ -43,6 +43,7 @@ public class SocialMediaController {
     app.get("messages", this::getMessagesHandler);
     app.post("messages", this::postMessageHandler);
     app.get("messages/{id}", this::getMessageById);
+    app.delete("messages/{id}", this::deleteMessageById);
     return app;
   }
 
@@ -57,8 +58,7 @@ public class SocialMediaController {
   }
 
   private void postAccountHandler(Context ctx) throws JsonProcessingException {
-    ObjectMapper mapper = new ObjectMapper();
-    Account account = mapper.readValue(ctx.body(), Account.class);
+    Account account = ctx.bodyAsClass(Account.class);
     int uLen = account.getUsername().length();
     int pLen = account.getPassword().length();
     boolean usernameInvalid = uLen == 0 || uLen > 255;
@@ -77,9 +77,7 @@ public class SocialMediaController {
   }
 
   private void postLoginHandler(Context ctx) throws JsonProcessingException {
-    ObjectMapper mapper = new ObjectMapper();
-    Account account = mapper.readValue(ctx.body(), Account.class);
-    
+    Account account = ctx.bodyAsClass(Account.class);
     Account addedAccount = accountService.login(account);
     if (addedAccount != null) {
       ctx.json(addedAccount);
@@ -89,8 +87,7 @@ public class SocialMediaController {
   }
 
   private void postMessageHandler(Context ctx) throws JsonProcessingException {
-    ObjectMapper mapper = new ObjectMapper();
-    Message message = mapper.readValue(ctx.body(), Message.class);
+    Message message = ctx.bodyAsClass(Message.class);
     int msgLen = message.getMessage_text().length();
     boolean messageInvalid = msgLen < 1 || msgLen > 255;
     if (messageInvalid) {
@@ -121,6 +118,18 @@ public class SocialMediaController {
     try {
       int id = Integer.parseInt(ctx.pathParam("id"));
       Message message = messageService.getMessageById(id);
+      ctx.json(message != null ? message : "");
+    } catch (NumberFormatException e) {
+      System.out.println(e.getMessage());
+      ctx.status(400);
+      return;
+    }
+  }
+
+  private void deleteMessageById(Context ctx) {
+    try {
+      int id = Integer.parseInt(ctx.pathParam("id"));
+      Message message = messageService.deleteMessageById(id);
       ctx.json(message != null ? message : "");
     } catch (NumberFormatException e) {
       System.out.println(e.getMessage());

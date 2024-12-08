@@ -106,7 +106,7 @@ public class MessageDAO {
   }
 
   public boolean deleteMessageById(int id) {
-    String sql = "DELETE FROM Message WHERE id = ?";
+    String sql = "DELETE FROM Message WHERE message_id = ?";
     Connection conn = ConnectionUtil.getConnection();
 
     try {
