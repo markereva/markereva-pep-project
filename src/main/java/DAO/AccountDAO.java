@@ -9,31 +9,43 @@ import Model.Account;
 import Util.ConnectionUtil;
 
 public class AccountDAO {
-    
-  public Account insertAccount(Account account) {
-    String sql = "INSERT INTO Account (username, password) VALUES (?, ?) RETURNING account_id, username, password";
+
+  public boolean insertAccount(Account account) {
+    String sql = "INSERT INTO Account (username, password) VALUES (?, ?)";
     Connection conn = ConnectionUtil.getConnection();
 
     try {
       PreparedStatement ps = conn.prepareStatement(sql);
       ps.setString(1, account.getUsername());
       ps.setString(2, account.getPassword());
-      boolean success = ps.execute();
+      boolean isSuccessful = ps.executeUpdate() == 1;
+      return isSuccessful;
+    } catch (SQLException e) {
+      System.out.println(e.getMessage());
+    }
 
-      if (success) {
-        ResultSet rs = ps.getResultSet();
-        if (rs.next()) {
-          return new Account(
+    return false;
+  }
+
+  public Account getUserByUsername(String username) {
+    String sql = "SELECT * FROM Account WHERE username = ?";
+    Connection conn = ConnectionUtil.getConnection();
+
+    try {
+      PreparedStatement ps = conn.prepareStatement(sql);
+      ps.setString(1, username);
+      ResultSet rs = ps.executeQuery();
+
+      if (rs.next()) {
+        return new Account(
             rs.getInt("account_id"),
             rs.getString("username"),
-            rs.getString("password")
-            );
-        }
+            rs.getString("password"));
       }
     } catch (SQLException e) {
       System.out.println(e.getMessage());
     }
-    
+
     return null;
   }
 
@@ -46,13 +58,12 @@ public class AccountDAO {
       ps.setString(1, username);
       ps.setString(2, password);
       ResultSet rs = ps.executeQuery();
-      
+
       if (rs.next()) {
         return new Account(
-          rs.getInt("account_id"),
-          rs.getString("username"),
-          rs.getString("password")
-          );
+            rs.getInt("account_id"),
+            rs.getString("username"),
+            rs.getString("password"));
       }
     } catch (SQLException e) {
       System.out.println(e.getMessage());

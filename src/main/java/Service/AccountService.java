@@ -23,7 +23,11 @@ public class AccountService {
     int pLen = account.getPassword().length();
     boolean usernameInvalid = uLen < 4 || uLen > 255;
     boolean passwordInvalid = pLen < 4 || pLen > 255;
-    if (usernameInvalid || passwordInvalid) return null;
-    return accountDAO.insertAccount(account);
+    if (usernameInvalid || passwordInvalid)
+      return null;
+    boolean success = accountDAO.insertAccount(account);
+    if (success)
+      return accountDAO.getUserByUsername(account.getUsername());
+    return null;
   }
 }
