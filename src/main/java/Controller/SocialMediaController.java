@@ -1,7 +1,6 @@
 package Controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import Model.Account;
 import Model.Message;
@@ -171,7 +170,7 @@ public class SocialMediaController {
 
   private void getMessagesByAccountId(Context ctx) {
     Validator<Integer> validator = ctx.pathParamAsClass("id", Integer.class);
-    int id = validator.check(i -> i > 0, "message_id cannot be less than 1").get();
+    int id = validator.check(i -> i > 0, "account_id cannot be less than 1").get();
 
     if (validator.errors().size() != 0) {
       ctx.status(400);

@@ -4,27 +4,33 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import Model.Account;
 import Util.ConnectionUtil;
 
 public class AccountDAO {
 
-  public boolean insertAccount(Account account) {
+  public Account insertAccount(Account account) {
     String sql = "INSERT INTO Account (username, password) VALUES (?, ?)";
     Connection conn = ConnectionUtil.getConnection();
 
     try {
-      PreparedStatement ps = conn.prepareStatement(sql);
+      PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
       ps.setString(1, account.getUsername());
       ps.setString(2, account.getPassword());
-      boolean isSuccessful = ps.executeUpdate() == 1;
-      return isSuccessful;
+      ps.executeUpdate();
+
+      ResultSet rs = ps.getGeneratedKeys();
+      rs.next();
+      int account_id = rs.getInt("account_id");
+      account.setAccount_id(account_id);
+      return account;
     } catch (SQLException e) {
       System.out.println(e.getMessage());
     }
 
-    return false;
+    return null;
   }
 
   public Account getAccountByUsername(String username) {

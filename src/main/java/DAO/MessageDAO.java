@@ -2,6 +2,7 @@ package DAO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -92,11 +93,16 @@ public class MessageDAO {
     Connection conn = ConnectionUtil.getConnection();
 
     try {
-      PreparedStatement ps = conn.prepareStatement(sql);
+      PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
       ps.setInt(1, message.getPosted_by());
       ps.setString(2, message.getMessage_text());
       ps.setLong(3, message.getTime_posted_epoch());
       ps.executeUpdate();
+      
+      ResultSet rs = ps.getGeneratedKeys();
+      rs.next();
+      int message_id = rs.getInt("message_id");
+      message.setMessage_id(message_id);
       return message;
     } catch (SQLException e) {
       System.out.println(e.getMessage());

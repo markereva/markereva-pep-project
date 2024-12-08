@@ -27,8 +27,6 @@ public class AccountService {
   }
 
   public Account createAccount(Account account) {
-    boolean success = accountDAO.insertAccount(account);
-    if (success) return accountDAO.getAccountByUsername(account.getUsername());
-    return null;
+    return accountDAO.insertAccount(account);
   }
 }
