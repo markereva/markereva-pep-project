@@ -47,7 +47,7 @@ public class SocialMediaController {
     app.get("messages/{id}", this::getMessageById);
     app.delete("messages/{id}", this::deleteMessageById);
     app.patch("messages/{id}", this::patchMessageHandler);
-    app.get("accounts/{id}/messages", this::getMessageById);
+    app.get("accounts/{id}/messages", this::getMessagesByAccountId);
     return app;
   }
 
@@ -178,8 +178,8 @@ public class SocialMediaController {
       return;
     }
 
-    Message message = messageService.getMessageById(id);
-    ctx.json(message != null ? message : "");
+    List<Message> messages = messageService.getAllMessagesByAccountId(id);
+    ctx.json(messages != null ? messages : "");
   }
 
 }
