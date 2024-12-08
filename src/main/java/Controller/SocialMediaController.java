@@ -92,7 +92,7 @@ public class SocialMediaController {
   private void postMessageHandler(Context ctx) throws JsonProcessingException {
     Message message = ctx.bodyAsClass(Message.class);
     int msgLen = message.getMessage_text().length();
-    boolean messageInvalid = msgLen != 0 || msgLen > 255;
+    boolean messageInvalid = msgLen == 0 || msgLen > 255;
     if (messageInvalid) {
       ctx.status(400);
       return;
@@ -154,7 +154,7 @@ public class SocialMediaController {
     
     Message message = ctx.bodyAsClass(Message.class);
     int msgLen = message.getMessage_text().length();
-    boolean messageInvalid = msgLen != 0 || msgLen > 255;
+    boolean messageInvalid = msgLen == 0 || msgLen > 255;
     if (messageInvalid) {
       ctx.status(400);
       return;
@@ -164,7 +164,7 @@ public class SocialMediaController {
     if (addedMessage != null) {
       ctx.json(addedMessage);
     } else {
-      ctx.status(401);
+      ctx.status(400);
     }
   } 
 

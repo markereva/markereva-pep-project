@@ -123,7 +123,7 @@ public class MessageDAO {
   }
 
   public boolean updateMessageById(int id, String text) {
-    String sql = "UPDATE Message SET message_text = ? WHERE id = ?";
+    String sql = "UPDATE Message SET message_text = ? WHERE message_id = ?";
     Connection conn = ConnectionUtil.getConnection();
 
     try {

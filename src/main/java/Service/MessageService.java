@@ -35,7 +35,7 @@ public class MessageService {
   }
 
   public Message updateMessageById(int id, Message message) {
-    Message msg = messageDAO.getMessageById(message.getMessage_id());
+    Message msg = messageDAO.getMessageById(id);
     if (messageDAO.updateMessageById(id, message.getMessage_text())) {
       msg.setMessage_text(message.getMessage_text());
       return msg;
