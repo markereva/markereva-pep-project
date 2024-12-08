@@ -8,7 +8,7 @@ import Service.AccountService;
 import Service.MessageService;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
-import io.javalin.validation.Validator;
+import io.javalin.validation.ValidationException;
 
 import java.util.List;
 
@@ -38,7 +38,6 @@ public class SocialMediaController {
    */
   public Javalin startAPI() {
     Javalin app = Javalin.create();
-    app.get("example-endpoint", this::exampleHandler);
     app.post("register", this::postAccountHandler);
     app.post("login", this::postLoginHandler);
     app.get("messages", this::getMessagesHandler);
@@ -50,23 +49,16 @@ public class SocialMediaController {
     return app;
   }
 
-  /**
-   * This is an example handler for an example endpoint.
-   * 
-   * @param context The Javalin Context object manages information about both the
-   *                HTTP request and response.
-   */
-  private void exampleHandler(Context context) {
-    context.json("sample text");
-  }
-
   private void postAccountHandler(Context ctx) throws JsonProcessingException {
-    Account account = ctx.bodyAsClass(Account.class);
-    int uLen = account.getUsername().length();
-    int pLen = account.getPassword().length();
-    boolean usernameInvalid = uLen == 0 || uLen > 255;
-    boolean passwordInvalid = pLen < 4 || pLen > 255;
-    if (usernameInvalid || passwordInvalid) {
+    Account account;
+    try {
+      account = ctx.bodyValidator(Account.class)
+      .check(obj -> obj.getUsername().length() != 0, "username length cannot be 0")
+      .check(obj -> obj.getUsername().length() <= 255, "username length cannot be longer than 255")
+      .check(obj -> obj.getPassword().length() >= 4, "password length cannot less than 4")
+      .check(obj -> obj.getUsername().length() <= 255, "password length cannot be longer than 255")
+      .get();
+    } catch (ValidationException e) {
       ctx.status(400);
       return;
     }
@@ -90,10 +82,13 @@ public class SocialMediaController {
   }
 
   private void postMessageHandler(Context ctx) throws JsonProcessingException {
-    Message message = ctx.bodyAsClass(Message.class);
-    int msgLen = message.getMessage_text().length();
-    boolean messageInvalid = msgLen == 0 || msgLen > 255;
-    if (messageInvalid) {
+    Message message;
+    try {
+      message = ctx.bodyValidator(Message.class)
+      .check(obj -> obj.getMessage_text().length() != 0, "message_text length cannot be 0")
+      .check(obj -> obj.getMessage_text().length() <= 255, "message_text length cannot be longer than 255")
+      .get();
+    } catch (ValidationException e) {
       ctx.status(400);
       return;
     }
@@ -118,10 +113,12 @@ public class SocialMediaController {
   }
 
   private void getMessageById(Context ctx) {
-    Validator<Integer> validator = ctx.pathParamAsClass("id", Integer.class);
-    int id = validator.check(i -> i > 0, "message_id cannot be less than 1").get();
-
-    if (validator.errors().size() != 0) {
+    int id;
+    try {
+      id = ctx.pathParamAsClass("id", Integer.class)
+      .check(i -> i > 0, "message_id cannot be less than 1")
+      .get();
+    } catch (ValidationException e) {
       ctx.status(400);
       return;
     }
@@ -131,10 +128,12 @@ public class SocialMediaController {
   }
 
   private void deleteMessageById(Context ctx) {
-    Validator<Integer> validator = ctx.pathParamAsClass("id", Integer.class);
-    int id = validator.check(i -> i > 0, "message_id cannot be less than 1").get();
-
-    if (validator.errors().size() != 0) {
+    int id;
+    try {
+      id = ctx.pathParamAsClass("id", Integer.class)
+      .check(i -> i > 0, "message_id cannot be less than 1")
+      .get();
+    } catch (ValidationException e) {
       ctx.status(400);
       return;
     }
@@ -144,18 +143,23 @@ public class SocialMediaController {
   }
 
   private void patchMessageHandler(Context ctx) throws JsonProcessingException {
-    Validator<Integer> validator = ctx.pathParamAsClass("id", Integer.class);
-    int id = validator.check(i -> i > 0, "message_id cannot be less than 1").get();
-
-    if (validator.errors().size() != 0) {
+    int id;
+    try {
+      id = ctx.pathParamAsClass("id", Integer.class)
+      .check(i -> i > 0, "message_id cannot be less than 1")
+      .get();
+    } catch (ValidationException e) {
       ctx.status(400);
       return;
     }
     
-    Message message = ctx.bodyAsClass(Message.class);
-    int msgLen = message.getMessage_text().length();
-    boolean messageInvalid = msgLen == 0 || msgLen > 255;
-    if (messageInvalid) {
+    Message message;
+    try {
+      message = ctx.bodyValidator(Message.class)
+      .check(obj -> obj.getMessage_text().length() != 0, "message_text length cannot be 0")
+      .check(obj -> obj.getMessage_text().length() <= 255, "message_text length cannot be longer than 255")
+      .get();
+    } catch (ValidationException e) {
       ctx.status(400);
       return;
     }
@@ -169,10 +173,12 @@ public class SocialMediaController {
   }
 
   private void getMessagesByAccountId(Context ctx) {
-    Validator<Integer> validator = ctx.pathParamAsClass("id", Integer.class);
-    int id = validator.check(i -> i > 0, "account_id cannot be less than 1").get();
-
-    if (validator.errors().size() != 0) {
+    int id;
+    try{ 
+      id = ctx.pathParamAsClass("id", Integer.class)
+      .check(i -> i >= 1, "account_id cannot be less than 1")
+      .get();
+    } catch (ValidationException e) {
       ctx.status(400);
       return;
     }
