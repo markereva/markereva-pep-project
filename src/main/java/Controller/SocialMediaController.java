@@ -9,6 +9,8 @@ import Service.AccountService;
 import Service.MessageService;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
+import io.javalin.validation.Validator;
+
 import java.util.List;
 
 /**
@@ -44,6 +46,7 @@ public class SocialMediaController {
     app.post("messages", this::postMessageHandler);
     app.get("messages/{id}", this::getMessageById);
     app.delete("messages/{id}", this::deleteMessageById);
+    app.patch("messages/{id}", this::patchMessageHandler);
     return app;
   }
 
@@ -89,7 +92,7 @@ public class SocialMediaController {
   private void postMessageHandler(Context ctx) throws JsonProcessingException {
     Message message = ctx.bodyAsClass(Message.class);
     int msgLen = message.getMessage_text().length();
-    boolean messageInvalid = msgLen < 1 || msgLen > 255;
+    boolean messageInvalid = msgLen != 0 || msgLen > 255;
     if (messageInvalid) {
       ctx.status(400);
       return;
@@ -115,27 +118,54 @@ public class SocialMediaController {
   }
 
   private void getMessageById(Context ctx) {
-    try {
-      int id = Integer.parseInt(ctx.pathParam("id"));
-      Message message = messageService.getMessageById(id);
-      ctx.json(message != null ? message : "");
-    } catch (NumberFormatException e) {
-      System.out.println(e.getMessage());
+    Validator<Integer> validator = ctx.pathParamAsClass("id", Integer.class);
+    int id = validator.check(i -> i > 0, "message_id cannot be less than 1").get();
+
+    if (validator.errors().size() != 0) {
       ctx.status(400);
       return;
     }
+
+    Message message = messageService.getMessageById(id);
+    ctx.json(message != null ? message : "");
   }
 
   private void deleteMessageById(Context ctx) {
-    try {
-      int id = Integer.parseInt(ctx.pathParam("id"));
-      Message message = messageService.deleteMessageById(id);
-      ctx.json(message != null ? message : "");
-    } catch (NumberFormatException e) {
-      System.out.println(e.getMessage());
+    Validator<Integer> validator = ctx.pathParamAsClass("id", Integer.class);
+    int id = validator.check(i -> i > 0, "message_id cannot be less than 1").get();
+
+    if (validator.errors().size() != 0) {
       ctx.status(400);
       return;
     }
+
+    Message message = messageService.deleteMessageById(id);
+    ctx.json(message != null ? message : "");
   }
+
+  private void patchMessageHandler(Context ctx) throws JsonProcessingException {
+    Validator<Integer> validator = ctx.pathParamAsClass("id", Integer.class);
+    int id = validator.check(i -> i > 0, "message_id cannot be less than 1").get();
+
+    if (validator.errors().size() != 0) {
+      ctx.status(400);
+      return;
+    }
+    
+    Message message = ctx.bodyAsClass(Message.class);
+    int msgLen = message.getMessage_text().length();
+    boolean messageInvalid = msgLen != 0 || msgLen > 255;
+    if (messageInvalid) {
+      ctx.status(400);
+      return;
+    }
+
+    Message addedMessage = messageService.updateMessageById(id, message);
+    if (addedMessage != null) {
+      ctx.json(addedMessage);
+    } else {
+      ctx.status(401);
+    }
+  } 
 
 }
