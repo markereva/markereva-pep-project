@@ -27,7 +27,7 @@ public class AccountDAO {
     return false;
   }
 
-  public Account getUserByUsername(String username) {
+  public Account getAccountByUsername(String username) {
     String sql = "SELECT * FROM Account WHERE username = ?";
     Connection conn = ConnectionUtil.getConnection();
 
@@ -49,7 +49,7 @@ public class AccountDAO {
     return null;
   }
 
-  public Account getUserById(int id) {
+  public Account getAccountById(int id) {
     String sql = "SELECT * FROM Account WHERE account_id = ?";
     Connection conn = ConnectionUtil.getConnection();
 
@@ -71,7 +71,7 @@ public class AccountDAO {
     return null;
   }
 
-  public Account getUserByUsernameAndPassword(String username, String password) {
+  public Account getAccountByUsernameAndPassword(String username, String password) {
     String sql = "SELECT * FROM Account WHERE username = ? AND password = ?";
     Connection conn = ConnectionUtil.getConnection();
 

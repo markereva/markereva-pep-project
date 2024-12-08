@@ -14,21 +14,21 @@ public class AccountService {
     this.accountDAO = accountDAO;
   }
 
-  public Account getUserByUsername(String username) {
-    return accountDAO.getUserByUsername(username);
+  public Account getAccountByUsername(String username) {
+    return accountDAO.getAccountByUsername(username);
   }
 
-  public Account getUserById(int id) {
-    return accountDAO.getUserById(id);
+  public Account getAccountById(int id) {
+    return accountDAO.getAccountById(id);
   }
 
   public Account login(Account account) {
-    return accountDAO.getUserByUsernameAndPassword(account.getUsername(), account.getPassword());
+    return accountDAO.getAccountByUsernameAndPassword(account.getUsername(), account.getPassword());
   }
 
   public Account createAccount(Account account) {
     boolean success = accountDAO.insertAccount(account);
-    if (success) return accountDAO.getUserByUsername(account.getUsername());
+    if (success) return accountDAO.getAccountByUsername(account.getUsername());
     return null;
   }
 }

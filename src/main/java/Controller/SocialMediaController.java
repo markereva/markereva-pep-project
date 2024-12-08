@@ -47,6 +47,7 @@ public class SocialMediaController {
     app.get("messages/{id}", this::getMessageById);
     app.delete("messages/{id}", this::deleteMessageById);
     app.patch("messages/{id}", this::patchMessageHandler);
+    app.get("accounts/{id}/messages", this::getMessageById);
     return app;
   }
 
@@ -98,7 +99,7 @@ public class SocialMediaController {
       return;
     }
 
-    Account account = accountService.getUserById(message.getPosted_by());
+    Account account = accountService.getAccountById(message.getPosted_by());
     if (account == null) {
       ctx.status(400);
       return;
@@ -166,6 +167,19 @@ public class SocialMediaController {
     } else {
       ctx.status(400);
     }
-  } 
+  }
+
+  private void getMessagesByAccountId(Context ctx) {
+    Validator<Integer> validator = ctx.pathParamAsClass("id", Integer.class);
+    int id = validator.check(i -> i > 0, "message_id cannot be less than 1").get();
+
+    if (validator.errors().size() != 0) {
+      ctx.status(400);
+      return;
+    }
+
+    Message message = messageService.getMessageById(id);
+    ctx.json(message != null ? message : "");
+  }
 
 }
