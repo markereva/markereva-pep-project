@@ -64,7 +64,7 @@ public class MessageDAO {
   }
 
   public Message getMessageById(int id) {
-    String sql = "SELECT * FROM Message WHERE id = ?";
+    String sql = "SELECT * FROM Message WHERE message_id = ?";
     Connection conn = ConnectionUtil.getConnection();
 
     try {
