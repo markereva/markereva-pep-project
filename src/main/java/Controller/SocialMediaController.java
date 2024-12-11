@@ -64,21 +64,15 @@ public class SocialMediaController {
     }
     
     Account addedAccount = accountService.createAccount(account);
-    if (addedAccount != null) {
-      ctx.json(addedAccount);
-    } else {
-      ctx.status(400);
-    }
+    if (addedAccount != null) ctx.json(addedAccount);
+    else ctx.status(400);
   }
 
   private void postLoginHandler(Context ctx) throws JsonProcessingException {
     Account account = ctx.bodyAsClass(Account.class);
     Account addedAccount = accountService.login(account);
-    if (addedAccount != null) {
-      ctx.json(addedAccount);
-    } else {
-      ctx.status(401);
-    }
+    if (addedAccount != null) ctx.json(addedAccount);
+    else ctx.status(401);
   }
 
   private void postMessageHandler(Context ctx) throws JsonProcessingException {
@@ -100,11 +94,8 @@ public class SocialMediaController {
     }
 
     Message addedMessage = messageService.createMessage(message);
-    if (addedMessage != null) {
-      ctx.json(addedMessage);
-    } else {
-      ctx.status(401);
-    }
+    if (addedMessage != null) ctx.json(addedMessage);
+    else ctx.status(401);
   }
 
   private void getMessagesHandler(Context ctx) {
@@ -165,11 +156,8 @@ public class SocialMediaController {
     }
 
     Message addedMessage = messageService.updateMessageById(id, message);
-    if (addedMessage != null) {
-      ctx.json(addedMessage);
-    } else {
-      ctx.status(400);
-    }
+    if (addedMessage != null) ctx.json(addedMessage);
+    else ctx.status(400);
   }
 
   private void getMessagesByAccountId(Context ctx) {
